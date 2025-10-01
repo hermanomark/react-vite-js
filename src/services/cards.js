@@ -1,12 +1,12 @@
 import api from "./client";
 
-export const getAllCards = async() => {
+export const getAllCards = async(page = 1, itemsPerPage = 10) => {
  try {
-    const response = await api.get('/cards');
+    const response = await api.get(`/cards?pagination:page=${page}&pagination:itemsPerPage=${itemsPerPage}`);
 
     return response.data; 
  }  catch (error) {
-    return error || 'Failed to get all cards!' ; 
+    return error?.message|| 'Failed to get all cards!' ; 
  } 
 }
 
@@ -16,6 +16,6 @@ export const getCardById = async (id) => {
 
         return response.data;
     } catch (error) {
-        return error || 'Failed to get card by id!';
+        return error?.message || 'Failed to get card by id!';
     }
 }
