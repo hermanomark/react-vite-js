@@ -1,8 +1,8 @@
 import api from './client';
 
-export const getAllSeries = async () => {
+export const getAllSeries = async (page = 1, itemsPerPage = 10) => {
     try {
-        const response = await api.get(`/series`);
+        const response = await api.get(`/series?pagination:page=${page}&pagination:itemsPerPage=${itemsPerPage}`);
 
         return response.data;
     } catch (error) {
