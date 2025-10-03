@@ -1,8 +1,8 @@
 import api from './client';
 
-export const getAllSets = async () => {
+export const getAllSets = async (page = 1, itemsPerPage = 10) => {
     try {
-        const response = await api.get('/sets');
+        const response = await api.get(`/sets?pagination:page=${page}&pagination:itemsPerPage=${itemsPerPage}`);
 
         return response.data;
     } catch(error) {

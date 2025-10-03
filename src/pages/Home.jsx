@@ -57,7 +57,7 @@ const Home = () => {
             <MainLayout>
                 <GridLayout >
                     {cards.map((card) => (
-                        <Card key={card.id} card={card} />
+                        <Card key={card.id} card={card} type='cards' />
                     ))}
                 </GridLayout>
                 <LoadMore loadMoreRef={loadMoreRef} isFetchingNextPage={isFetchingNextPage} hasNextPage={hasNextPage} />

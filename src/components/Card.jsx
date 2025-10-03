@@ -1,15 +1,20 @@
 import React from 'react'
 
-const Card = ({ card: { name, image, logo } }) => {
-    return (
-        <div className='bg-white rounded-lg shadow-md overflow-hidden flex flex-col'>
-            {image && (<img className='w-full h-auto' src={`${image}/low.png`} />)}
-            {logo && (<img className='w-full h-auto' src={`${logo}.png`} />)}
-            <div className="p-4 flex-1 flex flex-col justify-between hidden">
-                <h2 className="text-xl font-semibold mb-2">{name}</h2>
-            </div>
-        </div>
-    )
+const Card = ({ card: { name, image, logo }, type }) => {
+    if (type === 'cards') return (<div className='bg-white rounded-lg shadow-md overflow-hidden flex flex-col'>
+        {image && (<img className='w-full h-auto' src={`${image}/low.png`} />)}
+    </div>)
+
+    if (['series', 'sets'].includes(type)) return (<div className="bg-white p-6 flex flex-col items-center justify-center w-full h-48">
+        {logo && (<img
+            className="w-auto h-48 object-contain mb-3"
+            src={`${logo}.png`}
+            alt={name}
+        />)}
+        <h2 className="text-lg font-semibold text-gray-800 text-center">{name}</h2>
+    </div>
+    );
+
 }
 
 export default Card

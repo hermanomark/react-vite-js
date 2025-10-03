@@ -58,7 +58,7 @@ const Series = () => {
             <MainLayout >
                 <GridLayout >
                     {series.map((item) => (
-                        <Card key={item.id} card={item} />
+                        <Card key={item.id} card={item} type='series' />
                     ))}
                 </GridLayout>
                 <LoadMore loadMoreRef={loadMoreRef} isFetchingNextPage={isFetchingNextPage} hasNextPage={hasNextPage} />
