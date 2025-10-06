@@ -1,20 +1,28 @@
 import { useParams } from "react-router-dom";
 import { getSetById } from "../services/sets";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SetDetail = () => {
+    const navigate = useNavigate();
+
     const { id } = useParams();
-    const [setData, setSetData] = useState({})
+    const [setDetail, setSetDetail] = useState({})
+    const [errorMessage, setErrorMessage] = useState('');
 
     const fetchSet = async (id) => {
         try {
             const set = await getSetById(id);
 
-            console.log(set);
-
-            setSetData(set);
+            setSetDetail(set);
         } catch (error) {
+            console.log(error.message || "Error fetching set!");
 
+            setErrorMessage(error.message || 'Error fetching set!');
+
+            setTimeout(() => {
+                navigate('/sets');
+            }, 3000)
         }
     }
 
@@ -22,43 +30,66 @@ const SetDetail = () => {
         fetchSet(id);
     }, []);
 
+    // if (!setDetail) return <p className="text-gray-700">Loading set details...</p>
+    if (errorMessage) return <p className="text-red-700">{errorMessage}, Redirecting in 3, 2, 1...</p>
+
     return (
         <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow p-4 flex flex-col md:flex-row items-center gap-4">
-            {/* Logo */}
-            {setData ? (
-                <>
+            <>
+                {setDetail.logo && (
                     <div className="flex-shrink-0 w-32 h-32 flex items-center justify-center bg-gray-50 rounded-lg">
                         <img
-                            src={`${setData.logo}.png`}
-                            alt={`${setData.name} logo`}
+                            src={`${setDetail.logo}.png`}
+                            alt={`${setDetail.name || 'Set'} logo`}
                             className="w-24 h-auto object-contain"
                         />
                     </div>
+                )}
 
-                    <div className="flex flex-col justify-between text-center md:text-left w-full">
-                        <h2 className="text-2xl font-bold text-gray-800">{setData.name}</h2>
-                        {setData.serie && (
-                            <>
-                                <p className="text-gray-600">Series: <span className="font-medium">{setData.serie.name}</span></p>
-                                <p className="text-gray-600">Release Date: <span className="font-medium">{setData.releaseDate}</span></p>
-                                <p className="text-gray-600">Abbreviation: <span className="font-medium">{setData.abbreviation.official}</span></p>
-                            </>
-                        )}
+                <div className="flex flex-col justify-between text-center md:text-left w-full">
+                    {setDetail.name && (
+                        <h2 className="text-2xl font-bold text-gray-800">{setDetail.name}</h2>
+                    )}
 
-                        {setData.cardCount && (
-                            <>
-                                <div className="mt-3 flex flex-wrap justify-center md:justify-start gap-2">
-                                    <span className="text-sm bg-gray-100 px-3 py-1 rounded-md">Total: {setData.cardCount.official}</span>
-                                    <span className="text-sm bg-gray-100 px-3 py-1 rounded-md">Normal: {setData.cardCount.normal}</span>
-                                    <span className="text-sm bg-gray-100 px-3 py-1 rounded-md">Holo: {setData.cardCount.holo}</span>
-                                </div>
-                            </>)}
-                    </div>
-                </>
-            ) : (
-                <div className="text-center text-gray-500 py-6">Loading set details...</div>
-            )}
+                    {setDetail.serie?.name && (
+                        <p className="text-gray-600">
+                            Series: <span className="font-medium">{setDetail.serie.name}</span>
+                        </p>
+                    )}
 
+                    {setDetail.releaseDate && (
+                        <p className="text-gray-600">
+                            Release Date: <span className="font-medium">{setDetail.releaseDate}</span>
+                        </p>
+                    )}
+
+                    {setDetail.abbreviation?.official && (
+                        <p className="text-gray-600">
+                            Abbreviation: <span className="font-medium">{setDetail.abbreviation.official}</span>
+                        </p>
+                    )}
+
+                    {setDetail.cardCount && (
+                        <div className="mt-3 flex flex-wrap justify-center md:justify-start gap-2">
+                            {setDetail.cardCount.official !== undefined && (
+                                <span className="text-sm bg-gray-100 px-3 py-1 rounded-md">
+                                    Total: {setDetail.cardCount.official}
+                                </span>
+                            )}
+                            {setDetail.cardCount.normal !== undefined && (
+                                <span className="text-sm bg-gray-100 px-3 py-1 rounded-md">
+                                    Normal: {setDetail.cardCount.normal}
+                                </span>
+                            )}
+                            {setDetail.cardCount.holo !== undefined && (
+                                <span className="text-sm bg-gray-100 px-3 py-1 rounded-md">
+                                    Holo: {setDetail.cardCount.holo}
+                                </span>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </>
         </div>
     );
 }

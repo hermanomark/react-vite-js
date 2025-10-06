@@ -48,8 +48,8 @@ const Home = () => {
         return () => observer.disconnect();
     }, [hasNextPage, fetchNextPage]);
 
-    if (status === "loading") return <p>Loading cards...</p>;
-    if (status === "error") return <p>Error: {error.message}</p>;
+    if (status === "loading") return <p className="text-gray-700">Loading cards...</p>;
+    if (status === "error") return <p className="text-red-700">Error: {error.message}</p>;
 
     return (
         <>
