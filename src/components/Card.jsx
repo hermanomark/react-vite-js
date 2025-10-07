@@ -4,7 +4,10 @@ import { useNavigate } from 'react-router-dom';
 const Card = ({ card: { id, name, image, logo }, type }) => {
     const navigate = useNavigate();
 
-    if (type === 'cards') return (<div className='bg-white rounded-lg shadow-md overflow-hidden flex flex-col'>
+    if (type === 'cards') return (<div onClick={() => {
+        navigate(`/cards/${id}`)
+    }} className='cursor-pointer bg-white rounded-lg shadow-md overflow-hidden flex flex-col 
+    transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:-translate-y-1'>
         {image && (<img className='w-full h-auto' src={`${image}/low.png`} />)}
     </div>)
 
@@ -12,7 +15,7 @@ const Card = ({ card: { id, name, image, logo }, type }) => {
     <div onClick={() => {
         navigate(`/sets/${id}`)
     }} 
-    className="cursor-pointer bg-white p-6 flex flex-col items-center justify-center w-full h-48">
+    className="cursor-pointer bg-white p-6 flex flex-col items-center justify-center w-full h-48 transform transition-all duration-300 hover:scale-105 hover:-translate-y-1">
         {logo && (<img
             className="w-auto h-48 object-contain mb-3"
             src={`${logo}.png`}
