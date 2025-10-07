@@ -6,7 +6,9 @@ export const getAllSets = async (page = 1, itemsPerPage = 10) => {
 
         return response.data;
     } catch(error) {
-        return error || 'Failed to get sets';
+        console.error('Error fetching all sets!:', error);
+
+        throw new Error(error.response?.data?.title || 'Error fetching all sets!');
     }
 }
 
@@ -14,14 +16,10 @@ export const getSetById = async (id) => {
     try {
         const response = await api.get(`/sets/${id}`);
 
-        if(response.status !== 200) {
-            throw new Error('Error fetching set!');
-        }
-
         return response.data;
     } catch (error) {
         console.error('Error fetching set:', error);
 
-        throw new Error(error.message || 'Error fetching set!');
+        throw new Error(error.response?.data?.title || 'Error fetching set!');
     }
 }

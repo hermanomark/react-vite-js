@@ -6,7 +6,9 @@ export const getAllCards = async(page = 1, itemsPerPage = 10) => {
 
     return response.data; 
  }  catch (error) {
-    return error?.message|| 'Failed to get all cards!' ; 
+    console.log('Error fetching all cards', error);
+
+    throw new Error(error.response?.data?.title || 'Error fetching all cards!');
  } 
 }
 
@@ -16,6 +18,8 @@ export const getCardById = async (id) => {
 
         return response.data;
     } catch (error) {
-        return error?.message || 'Failed to get card by id!';
+        console.log('Error fetching card', error);
+        
+        throw new Error(error.response?.data?.title || 'Error fetching card!');
     }
 }

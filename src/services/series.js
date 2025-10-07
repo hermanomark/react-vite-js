@@ -6,7 +6,9 @@ export const getAllSeries = async (page = 1, itemsPerPage = 10) => {
 
         return response.data;
     } catch (error) {
-        return error || 'Failed to get series!';
+        console.log('Error fetching all series', error);
+
+        throw new Error(error.response?.data?.title || 'Error fetching all series!');
     }
 }
 
@@ -16,6 +18,8 @@ export const getSeriesById = async (id) => {
 
         return response.data;
     } catch (error) {
-        return error || 'Failed to get series by id';
+        console.log('Error fetching series', error);
+        
+        throw new Error(error.response?.data?.title || 'Error fetching series!');
     }
 }
