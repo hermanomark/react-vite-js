@@ -13,7 +13,7 @@ const Card = ({ card: { id, name, image, logo }, type }) => {
 
     if (['series', 'sets'].includes(type)) return (
     <div onClick={() => {
-        navigate(`/sets/${id}`)
+        type === 'sets' ? navigate(`/sets/${id}`) : navigate(`/series/${id}`);
     }} 
     className="cursor-pointer bg-white p-6 flex flex-col items-center justify-center w-full h-48 transform transition-all duration-300 hover:scale-105 hover:-translate-y-1">
         {logo && (<img

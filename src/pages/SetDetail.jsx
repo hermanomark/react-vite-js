@@ -3,6 +3,7 @@ import { getSetById } from "../services/sets";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
+import BackButton from "../components/BackButton";
 
 const SetDetail = () => {
     const navigate = useNavigate();
@@ -38,6 +39,7 @@ const SetDetail = () => {
     }, []);
 
     return (<MainLayout>
+        <BackButton />
         {isLoading ? (<div>Loading... </div>) :
             errorMessage ? (<p className='text-red-700'>{errorMessage}, redirecting in 3, 2, 1...</p>) : (
                 <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow p-4 flex flex-col md:flex-row items-center gap-4">

@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { getCardById } from "../services/cards";
 import MainLayout from "../layouts/MainLayout";
 import InnerLayout from "../layouts/InnerLayout";
+import BackButton from "../components/BackButton";
 
 const CardDetail = () => {
     const { id } = useParams();
@@ -33,76 +34,149 @@ const CardDetail = () => {
         fetchCardDetail(id);
     }, []);
 
+    const getTypeColor = (type) => {
+        const colors = {
+            Grass: 'bg-green-500',
+            Fire: 'bg-red-500',
+            Water: 'bg-blue-500',
+            Electric: 'bg-yellow-500',
+            Psychic: 'bg-purple-500',
+            Fighting: 'bg-orange-700',
+            Darkness: 'bg-gray-800',
+            Metal: 'bg-gray-500',
+            Colorless: 'bg-gray-400',
+        };
+        return colors[type] || 'bg-gray-400';
+    };
+
+    const formatPrice = (price, unit) => {
+        console.log(price);
+
+        return `${unit === 'USD' ? '$' : '€'}${price?.toFixed(2)}`;
+    };
+
     return (<MainLayout>
+        <BackButton />
         <InnerLayout>
             {isLoading ? (<div>Loading...</div>) :
                 (errorMessage ? (<p className="text-red-700">{errorMessage}</p>) :
                     (
                         <>
-                            {/* Header Section */}
-                            <div className={`p-6 text-black`}>
-                                <div className="flex justify-between items-start">
+                            {/* Header */}
+                            <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4">
+                                <div className="flex justify-between items-center">
+                                    <h2 className="text-xl font-bold">{pokemonData.name}</h2>
+                                    <span className="text-sm opacity-80">#{pokemonData.localId}</span>
+                                </div>
+                                <div className="flex justify-between items-center mt-1">
+                                    <span className="text-sm">HP {pokemonData.hp}</span>
+                                    <span className="text-sm">{pokemonData.stage}</span>
+                                </div>
+                            </div>
+
+                            {/* Card Image */}
+                            <div className="p-4 bg-gray-50">
+                                <img
+                                    src={`${pokemonData.image}/high.png`}
+                                    alt={pokemonData.name}
+                                    className="w-full h-auto object-contain rounded-lg"
+                                />
+                            </div>
+
+                            {/* Card Details */}
+                            <div className="p-4 space-y-3">
+                                {/* Types */}
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm font-medium text-gray-600">Type:</span>
+                                    <div className="flex gap-1">
+                                        {pokemonData.types?.map((type, index) => (
+                                            <span
+                                                key={index}
+                                                className={`px-2 py-1 rounded-full text-white text-xs font-medium ${getTypeColor(type)}`}
+                                            >
+                                                {type}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Rarity and Set */}
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-gray-600">
+                                        <span className="font-medium">Rarity:</span> {pokemonData.rarity}
+                                    </span>
+                                    <span className="text-gray-600">
+                                        <span className="font-medium">Set:</span> {pokemonData.set.name}
+                                    </span>
+                                </div>
+
+                                {/* Attacks */}
+                                {pokemonData.attacks && pokemonData.attacks.length > 0 && (
                                     <div>
-                                        <h1 className="text-3xl font-bold mb-2">{pokemonData.name}</h1>
-                                        <div className="flex items-center space-x-4">
-                                            <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
-                                                {pokemonData.stage}
-                                            </span>
-                                            <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
-                                                HP {pokemonData.hp}
-                                            </span>
-                                            {pokemonData.types?.map((type, index) => (
-                                                <span key={index} className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
-                                                    {type}
-                                                </span>
+                                        <span className="text-sm font-medium text-gray-600">Attacks:</span>
+                                        <div className="mt-1 space-y-1">
+                                            {pokemonData.attacks.map((attack, index) => (
+                                                <div key={index} className="bg-gray-50 rounded p-2">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="font-medium text-sm">{attack.name}</span>
+                                                        <span className="text-sm text-red-600 font-bold">{attack.damage}</span>
+                                                    </div>
+                                                    <div className="flex gap-1 mt-1">
+                                                        {attack.cost.map((cost, costIndex) => (
+                                                            <span
+                                                                key={costIndex}
+                                                                className={`px-1 py-0.5 rounded text-xs text-white ${getTypeColor(cost)}`}
+                                                            >
+                                                                {cost}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </div>
                                             ))}
                                         </div>
                                     </div>
-                                    <div className="text-right">
-                                        <div className="text-xl font-bold">#{pokemonData.localId}</div>
-                                        <div className="text-sm opacity-90">{pokemonData.id}</div>
-                                        {pokemonData.dexId && (
-                                            <div className="text-sm opacity-90">
-                                                Dex #{pokemonData.dexId.join(', ')}
-                                            </div>
+                                )}
+
+                                {/* Legal Formats */}
+                                <div className="flex gap-2">
+                                    <span className="text-sm font-medium text-gray-600">Legal in:</span>
+                                    <div className="flex gap-2">
+                                        {pokemonData.legal.standard && (
+                                            <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">
+                                                Standard
+                                            </span>
+                                        )}
+                                        {pokemonData.legal.expanded && (
+                                            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">
+                                                Expanded
+                                            </span>
                                         )}
                                     </div>
                                 </div>
-                            </div>
 
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
-                                {/* Card Image Section */}
-                                <div className="lg:col-span-1">
-                                    <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 h-full">
-                                        <img
-                                            src={`${pokemonData.image}/high.png`}
-                                            alt={pokemonData.name}
-                                            className="w-full h-auto rounded-lg shadow-lg"
-                                            onError={(e) => {
-                                                e.target.src = `data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDIwMCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjgwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMDAgMTQwTDEyMCAxMjBMMTAwIDEwMEw4MCAxMjBMMTAwIDE0MFoiIGZpbGw9IiM5Q0EzQUYiLz4KPHRLEHQGEHN0eWxlPSJmb250LWZhbWlseTpzeXN0ZW0tdWksLWFwcGxlLXN5c3RlbSxCbGlua01hY1N5c3RlbUZvbnQsU2Vnb2UgVUksUm9ib3RvLE94eWdlbixVYnVudHUsQ2FudGFyZWxsLEZpcmEgU2FucyxEcm9pZCBTYW5zLEhlbHZldGljYSBOZXVlLHNhbnMtc2VyaWY7Zm9udC1zaXplOjE0cHg7Zm9udC13ZWlnaHQ6NTAwO2ZpbGw6IzZCNzI4MCIgeD0iMTAwIiB5PSIxNjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPiR7cG9rZW1vbkRhdGEubmFtZX08L3RleHQ+Cjwvc3ZnPgo=`;
-                                            }}
-                                        />
-                                        <div className="mt-4 space-y-2">
-                                            <div className="flex justify-between text-sm">
-                                                <span className="text-gray-600">Rarity:</span>
-                                                <span className="font-medium text-yellow-600">{pokemonData.rarity}</span>
-                                            </div>
-                                            <div className="flex justify-between text-sm">
-                                                <span className="text-gray-600">Illustrator:</span>
-                                                <span className="font-medium">{pokemonData.illustrator}</span>
-                                            </div>
-                                            {pokemonData.regulationMark && (
-                                                <div className="flex justify-between text-sm">
-                                                    <span className="text-gray-600">Regulation:</span>
-                                                    <span className="font-medium">Mark {pokemonData.regulationMark}</span>
+                                {/* Pricing */}
+                                {pokemonData.pricing?.tcgplayer && (
+                                    <div className="border-t pt-3">
+                                        <span className="text-sm font-medium text-gray-600">TCGPlayer Pricing:</span>
+                                        <div className="grid grid-cols-2 gap-2 mt-1 text-xs">
+                                            <div className="bg-gray-50 rounded p-2">
+                                                <div className="font-medium">Normal</div>
+                                                <div>Market: {formatPrice(pokemonData.pricing.tcgplayer?.normal?.marketPrice, pokemonData.pricing.tcgplayer?.unit)}</div>
+                                                <div className="text-gray-600">
+                                                    Low: {formatPrice(pokemonData.pricing.tcgplayer?.normal?.lowPrice, pokemonData.pricing.tcgplayer?.unit)}
                                                 </div>
-                                            )}
+                                            </div>
+                                            <div className="bg-gray-50 rounded p-2">
+                                                <div className="font-medium">Reverse Holo</div>
+                                                <div>Market: {formatPrice(pokemonData.pricing.tcgplayer["reverse-holofoil"]?.marketPrice, pokemonData.pricing.tcgplayer?.unit)}</div>
+                                                <div className="text-gray-600">
+                                                    Low: {formatPrice(pokemonData.pricing.tcgplayer["reverse-holofoil"]?.lowPrice, pokemonData.pricing.tcgplayer?.unit)}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
-
-
                         </>
                     ))}
         </InnerLayout>

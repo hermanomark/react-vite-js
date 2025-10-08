@@ -16,6 +16,8 @@ export const getCardById = async (id) => {
     try {
         const response = await api.get(`/cards/${id}`);
 
+        console.log(response.data);
+
         return response.data;
     } catch (error) {
         console.log('Error fetching card', error);
