@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query'
 import Card from '../components/Card';
-import { getAllCards, getCardById } from '../services/cards';
+import { getAllCards } from '../services/cards';
 import GridLayout from '../layouts/GridLayout';
 import Header from '../components/Header';
 import MainLayout from '../layouts/MainLayout';

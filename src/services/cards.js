@@ -2,7 +2,7 @@ import api from "./client";
 
 export const getAllCards = async(page = 1, itemsPerPage = 10) => {
  try {
-    const response = await api.get(`/cards?pagination:page=${page}&pagination:itemsPerPage=${itemsPerPage}`);
+    const response = await api.get(`/cards?&pagination:page=${page}&pagination:itemsPerPage=${itemsPerPage}`);
 
     return response.data; 
  }  catch (error) {
@@ -15,8 +15,6 @@ export const getAllCards = async(page = 1, itemsPerPage = 10) => {
 export const getCardById = async (id) => {
     try {
         const response = await api.get(`/cards/${id}`);
-
-        console.log(response.data);
 
         return response.data;
     } catch (error) {
