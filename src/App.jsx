@@ -1,27 +1,22 @@
 import './App.css';
-import { Route, Routes } from 'react-router-dom';
-import Home from './pages/Home';
-import Series from './pages/Series';
-import Sets from './pages/Sets';
-import SetDetail from './pages/SetDetail';
-import NotFound from './pages/NotFound';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import SeriesDetail from './pages/SeriesDetail';
-import CardDetail from './pages/CardDetail';
+import { AnimatePresence } from 'framer-motion';
+import { appRoutes } from './routes';
 
 const App = () => {
+  const location = useLocation();
+
   return (
     <>
       <Navbar />
-      <Routes>
-        <Route exact path='/' element={<Home />} />
-        <Route path='/cards/:id' element={<CardDetail />} />
-        <Route path='/series' element={<Series />} />
-        <Route path='/series/:id' element={<SeriesDetail />} />
-        <Route path='/sets' element={<Sets />} />
-        <Route path='/sets/:id' element={<SetDetail />} />
-        <Route path='*' element={<NotFound />} />
-      </Routes>
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          {appRoutes.map((route) => (
+            <Route key={route.path} path={route.path} element={<route.component />} />
+          ))}          
+        </Routes>
+      </AnimatePresence>
     </>
   )
 }
