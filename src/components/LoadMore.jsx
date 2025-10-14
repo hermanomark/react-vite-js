@@ -5,7 +5,7 @@ const LoadMore = ({ loadMoreRef, isFetchingNextPage, hasNextPage }) => {
                 ? "Loading more..."
                 : hasNextPage
                     ? "Scroll to load more"
-                    : "All cards are loaded"}
+                    : ""}
         </div>
     )
 }
