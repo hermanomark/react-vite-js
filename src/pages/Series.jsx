@@ -6,6 +6,7 @@ import MainLayout from "../layouts/MainLayout";
 import GridLayout from "../layouts/GridLayout";
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { getAllSeries } from "../services/series";
+import Spinner from '../components/Spinner';
 
 const Series = () => {
     const {
@@ -48,7 +49,7 @@ const Series = () => {
         return () => observer.disconnect();
     }, [hasNextPage, fetchNextPage]);
 
-    if (status === "loading") return <p>Loading series...</p>;
+    if (status === "loading") return <Spinner />;
     if (status === "error") return <p>Error: {error.message}</p>;
 
 

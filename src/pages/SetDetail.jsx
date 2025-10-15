@@ -10,6 +10,7 @@ import GridLayout from "../layouts/GridLayout";
 import noImage from '../assets/no-image.png';
 import { useInfiniteQuery } from "@tanstack/react-query";
 import LoadMore from "../components/LoadMore";
+import Spinner from "../components/Spinner";
 
 const SetDetail = () => {
   const navigate = useNavigate();
@@ -85,7 +86,7 @@ const SetDetail = () => {
 
   return (<MainLayout>
     <BackButton />
-    {isLoading ? (<div>Loading... </div>) :
+    {isLoading ? (<Spinner />) :
       errorMessage ? (<p className='text-red-700'>{errorMessage}, redirecting in 3, 2, 1...</p>) : (
         <>
           <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow p-4 flex flex-col md:flex-row items-center gap-4 mb-8">

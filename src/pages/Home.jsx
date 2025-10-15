@@ -7,6 +7,7 @@ import Header from '../components/Header';
 import MainLayout from '../layouts/MainLayout';
 import LoadMore from '../components/LoadMore';
 import FadeUp from '../components/FadeUp';
+import Spinner from '../components/Spinner';
 
 const Home = () => {
   const {
@@ -49,7 +50,7 @@ const Home = () => {
     return () => observer.disconnect();
   }, [hasNextPage, fetchNextPage]);
 
-  if (status === "loading") return <p className="text-gray-700">Loading cards...</p>;
+  if (status === "loading") return <p className="text-gray-700"><Spinner /></p>;
   if (status === "error") return <p className="text-red-700">Error: {error.message}</p>;
 
   return (

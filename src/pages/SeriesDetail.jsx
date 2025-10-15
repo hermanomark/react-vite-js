@@ -5,6 +5,7 @@ import MainLayout from "../layouts/MainLayout";
 import BackButton from "../components/BackButton";
 import noImage from '../assets/no-image.png';
 import { useNavigate } from "react-router-dom";
+import Spinner from "../components/Spinner";
 
 const SeriesDetail = () => {
   const { id } = useParams();
@@ -47,7 +48,7 @@ const SeriesDetail = () => {
 
   return (<MainLayout >
     <BackButton />
-    {isLoading ? <div>Loading... </div> : (
+    {isLoading ? <Spinner /> : (
       errorMessage ? <p className="text-red-500">{errorMessage}, redirecting in 3, 2, 1...</p> : (
         <>
           {/* Header Section */}

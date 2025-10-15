@@ -6,6 +6,7 @@ import MainLayout from "../layouts/MainLayout";
 import GridLayout from "../layouts/GridLayout";
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { getAllSets } from "../services/sets";
+import Spinner from '../components/Spinner';
 
 const Sets = () => {
     const {
@@ -48,7 +49,7 @@ const Sets = () => {
         return () => observer.disconnect();
     }, [hasNextPage, fetchNextPage]);
 
-    if (status === "loading") return <p>Loading sets...</p>;
+    if (status === "loading") return <Spinner />;
     if (status === "error") return <p>Error: {error.message}</p>;
 
 
