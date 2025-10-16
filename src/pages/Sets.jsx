@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Header from "../components/Header";
 import LoadMore from "../components/LoadMore";
 import Card from "../components/Card";
@@ -7,65 +7,84 @@ import GridLayout from "../layouts/GridLayout";
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { getAllSets } from "../services/sets";
 import Spinner from '../components/Spinner';
+import SearchInput from '../components/SearchInput';
+import { useDebounce } from 'react-use';
 
 const Sets = () => {
-    const {
-        data,
-        error,
-        fetchNextPage,
-        hasNextPage,
-        isFetchingNextPage,
-        status
-    } = useInfiniteQuery({
-        queryKey: ['sets'],
-        queryFn: ({ pageParam = 1 }) => getAllSets(pageParam, 10),
-        getNextPageParam: (lastPage, allPages) => {
-            if (!lastPage || lastPage.length === 0 || lastPage.length < 10) {
-                return undefined;
-            }
-            return allPages.length + 1;
-        },
-    });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
 
-    const sets = (data?.pages ?? []).flatMap(page =>
-        page.filter(set => set.logo)
-    ) ?? [];
+  useDebounce(() => {
+    setDebouncedSearchTerm(searchTerm);
+  }, 720, [searchTerm]);
 
-    const loadMoreRef = useRef(null);
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status
+  } = useInfiniteQuery({
+    queryKey: ['sets', debouncedSearchTerm],
+    queryFn: ({ pageParam = 1 }) => getAllSets(pageParam, 10, debouncedSearchTerm),
+    getNextPageParam: (lastPage, allPages) => {
+      if (!lastPage || lastPage.length === 0 || lastPage.length < 10) {
+        return undefined;
+      }
+      return allPages.length + 1;
+    },
+  });
 
-    useEffect(() => {
-        if (!loadMoreRef.current || !hasNextPage) return;
+  const sets = (data?.pages ?? []).flatMap(page =>
+    page.filter(set => set.logo)
+  ) ?? [];
 
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting) {
-                    fetchNextPage();
-                }
-            },
-            { threshold: 1.0 }
-        );
+  const loadMoreRef = useRef(null);
 
-        observer.observe(loadMoreRef.current);
-        return () => observer.disconnect();
-    }, [hasNextPage, fetchNextPage]);
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+  }
 
-    if (status === "loading") return <Spinner />;
-    if (status === "error") return <p>Error: {error.message}</p>;
+  useEffect(() => {
+    if (!loadMoreRef.current || !hasNextPage) return;
 
-
-    return (
-        <>
-            <Header header="Sets" />
-            <MainLayout >
-                <GridLayout >
-                    {sets.map((item) => (
-                        <Card key={item.id} card={item} type='sets' />
-                    ))}
-                </GridLayout>
-                <LoadMore loadMoreRef={loadMoreRef} isFetchingNextPage={isFetchingNextPage} hasNextPage={hasNextPage} />
-            </MainLayout>
-        </>
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 1.0 }
     );
+
+    observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, [hasNextPage, fetchNextPage]);
+
+  if (status === "loading") return <Spinner />;
+  if (status === "error") return <p>Error: {error.message}</p>;
+
+
+  return (
+    <>
+      <Header header="Sets" />
+      <MainLayout >
+        <SearchInput onSearch={handleSearch} placeholder='Search for sets...' />
+        {sets.length === 0 && debouncedSearchTerm ? (<p className="text-gray-700">No sets found for "{debouncedSearchTerm}"</p>) : (
+          <>
+            <GridLayout >
+              {sets.map((item) => (
+                <Card key={item.id} card={item} type='sets' />
+              ))}
+            </GridLayout>
+            <LoadMore loadMoreRef={loadMoreRef} isFetchingNextPage={isFetchingNextPage} hasNextPage={hasNextPage} />
+          </>
+        )}
+
+      </MainLayout>
+    </>
+  );
 }
 
 export default Sets;

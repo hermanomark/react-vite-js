@@ -34,6 +34,10 @@ const SetDetail = () => {
     }
   });
 
+  // const cards = (data?.pages ?? []).flatMap(page =>
+  //   page.filter(card => card.image)
+  // ) ?? [];
+
   const setCards = (data?.pages ?? []).flatMap(page =>
     page
   ) ?? [];

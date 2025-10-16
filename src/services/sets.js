@@ -1,8 +1,14 @@
 import api from './client';
 
-export const getAllSets = async (page = 1, itemsPerPage = 10) => {
+export const getAllSets = async (page = 1, itemsPerPage = 10, searchName) => {
   try {
-    const response = await api.get(`/sets?pagination:page=${page}&pagination:itemsPerPage=${itemsPerPage}`);
+    let url = `/sets?pagination:page=${page}&pagination:itemsPerPage=${itemsPerPage}`;
+    
+    if (searchName) {
+      url += `&name=${encodeURIComponent(searchName)}`;
+    }
+    
+    const response = await api.get(url);
 
     return response.data;
   } catch (error) {
@@ -26,7 +32,11 @@ export const getSetById = async (id) => {
 
 export const getAllCardsInSet = async (id, page = 1, itemsPerPage = 10) => {
   try {
-    const response = await api.get(`/cards?set=${id}&pagination:page=${page}&pagination:itemsPerPage=${itemsPerPage}`);
+    let url = `/cards?pagination:page=${page}&pagination:itemsPerPage=${itemsPerPage}&set=eq:${id}`;
+
+    const response = await api.get(url);
+
+    console.log(response.data);
 
     return response.data;
   } catch (error) {

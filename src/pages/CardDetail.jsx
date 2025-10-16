@@ -5,6 +5,7 @@ import MainLayout from "../layouts/MainLayout";
 import InnerLayout from "../layouts/InnerLayout";
 import BackButton from "../components/BackButton";
 import { useNavigate } from "react-router-dom";
+import Spinner from "../components/Spinner";
 
 const CardDetail = () => {
   const { id } = useParams();
@@ -63,7 +64,7 @@ const CardDetail = () => {
 
   return (<MainLayout>
     <BackButton />
-    {isLoading ? (<div>Loading...</div>) :
+    {isLoading ? (<Spinner />) :
       (errorMessage ? (<p className="text-red-700">{errorMessage}, redirecting in 3, 2, 1...</p>) :
         (
           <InnerLayout>
