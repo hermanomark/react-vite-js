@@ -34,6 +34,7 @@ const Sets = () => {
       }
       return allPages.length + 1;
     },
+    staleTime: 5 * 60 * 1000, 
   });
 
   const sets = (data?.pages ?? []).flatMap(page =>
@@ -64,7 +65,6 @@ const Sets = () => {
 
   if (status === "loading") return <Spinner />;
   if (status === "error") return <p>Error: {error.message}</p>;
-
 
   return (
     <>

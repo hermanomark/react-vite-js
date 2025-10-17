@@ -57,9 +57,19 @@ const CardDetail = () => {
   };
 
   const formatPrice = (price, unit) => {
-    console.log(price);
-
     return `${unit === 'USD' ? '$' : '€'}${price?.toFixed(2)}`;
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   return (<MainLayout>
@@ -106,6 +116,15 @@ const CardDetail = () => {
                 </div>
               </div>
 
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">
+                  <span className="font-medium">Illustrator:</span> {pokemonData.illustrator}
+                </span>
+                <span className="text-gray-600">
+                  <span className="font-medium">Variant:</span> {pokemonData.variants.firstEdition}
+                </span>
+              </div>
+
               {/* Rarity and Set */}
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">
@@ -118,7 +137,7 @@ const CardDetail = () => {
 
               {/* Attacks */}
               {pokemonData.attacks && pokemonData.attacks.length > 0 && (
-                <div>
+                <>
                   <span className="text-sm font-medium text-gray-600">Attacks:</span>
                   <div className="mt-1 space-y-1">
                     {pokemonData.attacks.map((attack, index) => (
@@ -137,13 +156,17 @@ const CardDetail = () => {
                             </span>
                           ))}
                         </div>
+                        <p className="text-left text-sm text-gray-600 mt-2">
+                          {attack.effect}
+                        </p>
                       </div>
                     ))}
                   </div>
-                </div>
+                </>
               )}
 
               {/* Legal Formats */}
+              {(pokemonData.legal.standard || pokemonData.legal.expanded) && (
               <div className="flex gap-2">
                 <span className="text-sm font-medium text-gray-600">Legal in:</span>
                 <div className="flex gap-2">
@@ -158,27 +181,46 @@ const CardDetail = () => {
                     </span>
                   )}
                 </div>
-              </div>
+              </div>)}
 
               {/* Pricing */}
               {pokemonData.pricing?.tcgplayer && (
-                <div className="border-t pt-3">
+                <div className="border-t pt-3 border-gray-200">
                   <span className="text-sm font-medium text-gray-600">TCGPlayer Pricing:</span>
                   <div className="grid grid-cols-2 gap-2 mt-1 text-xs">
-                    <div className="bg-gray-50 rounded p-2">
-                      <div className="font-medium">Normal</div>
-                      <div>Market: {formatPrice(pokemonData.pricing.tcgplayer?.normal?.marketPrice, pokemonData.pricing.tcgplayer?.unit)}</div>
-                      <div className="text-gray-600">
-                        Low: {formatPrice(pokemonData.pricing.tcgplayer?.normal?.lowPrice, pokemonData.pricing.tcgplayer?.unit)}
+
+                    {pokemonData.pricing.tcgplayer?.holofoil && (
+                      <div className="bg-gray-50 rounded p-2">
+                        <div className="font-medium">Holo</div>
+                        <div>Market: {formatPrice(pokemonData.pricing.tcgplayer?.holofoil?.marketPrice, pokemonData.pricing.tcgplayer?.unit)}</div>
+                        <div className="text-gray-600">
+                          Low: {formatPrice(pokemonData.pricing.tcgplayer?.holofoil?.lowPrice, pokemonData.pricing.tcgplayer?.unit)}
+                        </div>
                       </div>
-                    </div>
-                    <div className="bg-gray-50 rounded p-2">
-                      <div className="font-medium">Reverse Holo</div>
-                      <div>Market: {formatPrice(pokemonData.pricing.tcgplayer["reverse-holofoil"]?.marketPrice, pokemonData.pricing.tcgplayer?.unit)}</div>
-                      <div className="text-gray-600">
-                        Low: {formatPrice(pokemonData.pricing.tcgplayer["reverse-holofoil"]?.lowPrice, pokemonData.pricing.tcgplayer?.unit)}
+                    )}
+
+                    {pokemonData.pricing.tcgplayer?.normal && (
+                      <div className="bg-gray-50 rounded p-2">
+                        <div className="font-medium">Normal</div>
+                        <div>Market: {formatPrice(pokemonData.pricing.tcgplayer?.normal?.marketPrice, pokemonData.pricing.tcgplayer?.unit)}</div>
+                        <div className="text-gray-600">
+                          Low: {formatPrice(pokemonData.pricing.tcgplayer?.normal?.lowPrice, pokemonData.pricing.tcgplayer?.unit)}
+                        </div>
                       </div>
-                    </div>
+                    )}
+
+                    {pokemonData.pricing.tcgplayer["reverse-holofoil"] && (
+                      <div className="bg-gray-50 rounded p-2">
+                        <div className="font-medium">Reverse Holo</div>
+                        <div>Market: {formatPrice(pokemonData.pricing.tcgplayer["reverse-holofoil"]?.marketPrice, pokemonData.pricing.tcgplayer?.unit)}</div>
+                        <div className="text-gray-600">
+                          Low: {formatPrice(pokemonData.pricing.tcgplayer["reverse-holofoil"]?.lowPrice, pokemonData.pricing.tcgplayer?.unit)}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-left w-full">
+                    <span className="text-xs text-gray-600">Last price updated: {formatDate(pokemonData.pricing.tcgplayer?.updated)}</span>
                   </div>
                 </div>
               )}

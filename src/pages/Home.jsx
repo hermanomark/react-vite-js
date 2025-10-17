@@ -1,24 +1,37 @@
 import { useEffect, useRef, useState } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query'
-import Card from '../components/Card';
+import { useDebounce } from 'react-use';
+import { useSearchParams } from 'react-router-dom';
 import { getAllCards } from '../services/cards';
+import Card from '../components/Card';
 import GridLayout from '../layouts/GridLayout';
 import Header from '../components/Header';
 import MainLayout from '../layouts/MainLayout';
 import LoadMore from '../components/LoadMore';
 import Spinner from '../components/Spinner';
 import SearchInput from '../components/SearchInput';
-import { useDebounce } from 'react-use';
 import CategoryFilter from '../components/CategoryFilter';
+import RaritiesFilter from '../components/RaritiesFilter';
 
 const Home = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
+  const [selectedRarirties, setSelectedRarities] = useState([]);
 
   useDebounce(() => {
     setDebouncedSearchTerm(searchTerm);
   }, 720, [searchTerm]);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (debouncedSearchTerm) params.set('search', debouncedSearchTerm);
+    if (selectedCategory) params.set('category', selectedCategory);
+    if (selectedRarirties.length > 0) params.set('rarity', selectedRarirties.join(','));
+
+    setSearchParams(params);
+  }, [debouncedSearchTerm, selectedCategory, selectedRarirties, setSearchParams]);
 
   const {
     data,
@@ -28,14 +41,15 @@ const Home = () => {
     isFetchingNextPage,
     status
   } = useInfiniteQuery({
-    queryKey: ['cards', debouncedSearchTerm, selectedCategory],
-    queryFn: ({ pageParam = 1 }) => getAllCards(pageParam, 10, debouncedSearchTerm, selectedCategory),
+    queryKey: ['cards', debouncedSearchTerm, selectedCategory, selectedRarirties],
+    queryFn: ({ pageParam = 1 }) => getAllCards(pageParam, 10, debouncedSearchTerm, selectedCategory, selectedRarirties),
     getNextPageParam: (lastPage, allPages) => {
       if (!lastPage || lastPage.length === 0 || lastPage.length < 10) {
         return undefined;
       }
       return allPages.length + 1;
     },
+    staleTime: 5 * 60 * 1000, 
   });
 
   const cards = (data?.pages ?? []).flatMap(page =>
@@ -50,6 +64,10 @@ const Home = () => {
 
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
+  }
+
+  const handleRaritiesChange = (rarities) => {
+    setSelectedRarities(rarities);
   }
 
   useEffect(() => {
@@ -76,8 +94,12 @@ const Home = () => {
       <Header header="TCG Cards" />
       <MainLayout>
         <div className='flex flex-row justify-between sm:flex-row gap-4 mb-6 w-full'>
-          <SearchInput onSearch={handleSearch} />
-          <CategoryFilter onCategoryChange={handleCategoryChange} />
+          <SearchInput onSearch={handleSearch} value={searchTerm} />
+          <CategoryFilter onCategoryChange={handleCategoryChange} selectedCategory={selectedCategory} />
+          
+        </div>
+        <div className='flex flex-row sm:flex-row gap-4 mb-6 w-full'>
+          <RaritiesFilter onRaritiesChange={handleRaritiesChange} selectedRarities={selectedRarirties} />
         </div>
         {cards.length === 0 && (debouncedSearchTerm || selectedCategory) ? (
           <div className="text-center py-8">

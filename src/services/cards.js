@@ -1,6 +1,6 @@
 import api from "./client";
 
-export const getAllCards = async (page = 1, itemsPerPage = 10, searchName = '', category = '') => {
+export const getAllCards = async (page = 1, itemsPerPage = 10, searchName = '', category = '', rarity = []) => {
   try {
     let url = `/cards?pagination:page=${page}&pagination:itemsPerPage=${itemsPerPage}`;
 
@@ -11,7 +11,11 @@ export const getAllCards = async (page = 1, itemsPerPage = 10, searchName = '', 
     if (category) {
       url += `&category=eq:${encodeURIComponent(category)}`;
     }
-    
+
+    if (rarity.length > 0) {
+      url += `&rarity=eq:${encodeURIComponent(rarity.join('|'))}`;
+    }
+
     url += `&image=notnull:`;
 
     console.log(url);
