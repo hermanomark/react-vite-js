@@ -53,7 +53,6 @@ const Series = () => {
   if (status === "loading") return <Spinner />;
   if (status === "error") return <p>Error: {error.message}</p>;
 
-
   return (
     <>
       <Header header="Series" />

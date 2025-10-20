@@ -34,7 +34,7 @@ const Sets = () => {
       }
       return allPages.length + 1;
     },
-    staleTime: 5 * 60 * 1000, 
+    staleTime: 5 * 60 * 1000,
   });
 
   const sets = (data?.pages ?? []).flatMap(page =>
@@ -70,7 +70,9 @@ const Sets = () => {
     <>
       <Header header="Sets" />
       <MainLayout >
-        <SearchInput onSearch={handleSearch} placeholder='Search for sets...' />
+        <div className="mb-12">
+          <SearchInput onSearch={handleSearch} placeholder='Search for sets...' />
+        </div>
         {sets.length === 0 && debouncedSearchTerm ? (<p className="text-gray-700">No sets found for "{debouncedSearchTerm}"</p>) : (
           <>
             <GridLayout >
