@@ -1,6 +1,6 @@
 import api from "./client";
 
-export const getAllCards = async (page = 1, itemsPerPage = 10, searchName = '', category = '', rarity = []) => {
+export const getAllCards = async (page = 1, itemsPerPage = 10, searchName = '', category = '', rarity = [], hpRange = [0, 300]) => {
   try {
     let url = `/cards?pagination:page=${page}&pagination:itemsPerPage=${itemsPerPage}`;
 
@@ -12,14 +12,16 @@ export const getAllCards = async (page = 1, itemsPerPage = 10, searchName = '', 
       url += `&category=eq:${encodeURIComponent(category)}`;
     }
 
-    console.log(rarity);
-
     if (rarity.length > 0) {
-      // Add debugging for rarity filtering
-      console.log('Filtering by rarities:', rarity);
-      console.log('Rarity query string:', rarity.join('|'));
-
       url += `&rarity=${encodeURIComponent(rarity.join('|'))}`;
+    }
+
+//     Greater or Equal	gte: hp = gte: 50	Elements with more or equal than the value
+// Lesser or Equal	lte: hp = lte: 50
+
+    if (hpRange && (hpRange[0] !== 0 || hpRange[1] !== 300)) {
+      url += `&hp=gte:${hpRange[0]}`;
+      url += `&hp=lte:${hpRange[1]}`;
     }
 
     url += `&image=notnull:`;

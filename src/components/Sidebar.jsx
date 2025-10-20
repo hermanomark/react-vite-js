@@ -1,20 +1,22 @@
 import { useState } from 'react';
 import CategoryFilter from './CategoryFilter';
 import RaritiesFilter from './RaritiesFilter';
+import HpSlider from './HpSlider';
 import FadeUp from './FadeUp';
 
 const Sidebar = ({
   selectedCategory,
   onCategoryChange,
   selectedRarities,
-  onRaritiesChange
+  onRaritiesChange,
+  hpRange,
+  onHPChange
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
-
   return (
     <>
       {/* Filter Button */}
@@ -77,6 +79,15 @@ const Sidebar = ({
                 onRaritiesChange={onRaritiesChange}
               />
             </div>
+
+            <div>
+              <HpSlider
+                minHP={0}
+                maxHP={300}
+                currentRange={hpRange}
+                onHPChange={onHPChange}
+              />
+            </div>  
 
             {/* Clear all filters */}
             <div className="pt-4 border-t border-gray-200">
