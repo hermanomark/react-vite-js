@@ -15,9 +15,12 @@ const RaritiesFilter = ({ selectedRarities, onRaritiesChange }) => {
   });
 
   const handleRarityToggle = (rarity) => {
+    console.log('Toggling rarity:', rarity);
     const updatedRarities = selectedRarities.includes(rarity)
       ? selectedRarities.filter(r => r !== rarity)
       : [...selectedRarities, rarity];
+
+      console.log('Updated rarities:', updatedRarities);
 
     onRaritiesChange(updatedRarities);
   };

@@ -9,16 +9,15 @@ import Header from '../components/Header';
 import MainLayout from '../layouts/MainLayout';
 import LoadMore from '../components/LoadMore';
 import Spinner from '../components/Spinner';
+import Sidebar from '../components/Sidebar';
 import SearchInput from '../components/SearchInput';
-import CategoryFilter from '../components/CategoryFilter';
-import RaritiesFilter from '../components/RaritiesFilter';
 
 const Home = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
-  const [selectedRarirties, setSelectedRarities] = useState([]);
+  const [selectedRarities, setSelectedRarities] = useState([]);
 
   useDebounce(() => {
     setDebouncedSearchTerm(searchTerm);
@@ -28,10 +27,10 @@ const Home = () => {
     const params = new URLSearchParams();
     if (debouncedSearchTerm) params.set('search', debouncedSearchTerm);
     if (selectedCategory) params.set('category', selectedCategory);
-    if (selectedRarirties.length > 0) params.set('rarity', selectedRarirties.join(','));
+    if (selectedRarities.length > 0) params.set('rarity', selectedRarities.join(','));
 
     setSearchParams(params);
-  }, [debouncedSearchTerm, selectedCategory, selectedRarirties, setSearchParams]);
+  }, [debouncedSearchTerm, selectedCategory, selectedRarities, setSearchParams]);
 
   const {
     data,
@@ -41,8 +40,8 @@ const Home = () => {
     isFetchingNextPage,
     status
   } = useInfiniteQuery({
-    queryKey: ['cards', debouncedSearchTerm, selectedCategory, selectedRarirties],
-    queryFn: ({ pageParam = 1 }) => getAllCards(pageParam, 10, debouncedSearchTerm, selectedCategory, selectedRarirties),
+    queryKey: ['cards', debouncedSearchTerm, selectedCategory, selectedRarities],
+    queryFn: ({ pageParam = 1 }) => getAllCards(pageParam, 10, debouncedSearchTerm, selectedCategory, selectedRarities),
     getNextPageParam: (lastPage, allPages) => {
       if (!lastPage || lastPage.length === 0 || lastPage.length < 10) {
         return undefined;
@@ -67,6 +66,7 @@ const Home = () => {
   }
 
   const handleRaritiesChange = (rarities) => {
+    console.log('Rarities changed to:', rarities);
     setSelectedRarities(rarities);
   }
 
@@ -92,30 +92,30 @@ const Home = () => {
   return (
     <>
       <Header header="TCG Cards" />
+    
       <MainLayout>
         <div className='flex flex-row justify-between sm:flex-row gap-4 mb-6 w-full'>
           <SearchInput onSearch={handleSearch} value={searchTerm} />
-          <CategoryFilter onCategoryChange={handleCategoryChange} selectedCategory={selectedCategory} />
+          {/* <CategoryFilter onCategoryChange={handleCategoryChange} selectedCategory={selectedCategory} /> */}
+          <Sidebar
+            selectedCategory={selectedCategory}
+            onCategoryChange={handleCategoryChange}
+            selectedRarities={selectedRarities}
+            onRaritiesChange={handleRaritiesChange}
+          />  
           
         </div>
-        <div className='flex flex-row sm:flex-row gap-4 mb-6 w-full'>
-          <RaritiesFilter onRaritiesChange={handleRaritiesChange} selectedRarities={selectedRarirties} />
-        </div>
-        {cards.length === 0 && (debouncedSearchTerm || selectedCategory) ? (
+        {cards.length === 0 && (debouncedSearchTerm || selectedCategory || selectedRarities.length > 0) ? (
           <div className="text-center py-8">
             <p className="text-gray-500">
-              No cards found for {debouncedSearchTerm && selectedCategory
-                ? `"${debouncedSearchTerm}" in category "${selectedCategory}"`
-                : debouncedSearchTerm
-                  ? `"${debouncedSearchTerm}"`
-                  : `category "${selectedCategory}"`}
+              No cards found matching your criteria.
             </p>
           </div>
         ) : (
           <>
             <GridLayout>
               {cards.map((card) => (
-                <Card key={card.id} card={card} type='cards' />
+                <Card key={`${card.id}-${card.name}`} card={card} type='cards' />
               ))}
             </GridLayout>
             <LoadMore loadMoreRef={loadMoreRef} isFetchingNextPage={isFetchingNextPage} hasNextPage={hasNextPage} />

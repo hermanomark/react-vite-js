@@ -12,17 +12,21 @@ export const getAllCards = async (page = 1, itemsPerPage = 10, searchName = '', 
       url += `&category=eq:${encodeURIComponent(category)}`;
     }
 
+    console.log(rarity);
+
     if (rarity.length > 0) {
-      url += `&rarity=eq:${encodeURIComponent(rarity.join('|'))}`;
+      // Add debugging for rarity filtering
+      console.log('Filtering by rarities:', rarity);
+      console.log('Rarity query string:', rarity.join('|'));
+
+      url += `&rarity=${encodeURIComponent(rarity.join('|'))}`;
     }
 
     url += `&image=notnull:`;
 
-    console.log(url);
-
     const response = await api.get(url);
 
-    console.log(response.data);
+    console.log(url);
 
     return response.data;
   } catch (error) {

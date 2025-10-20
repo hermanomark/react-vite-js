@@ -21,7 +21,7 @@ const SearchInput = ({ onSearch, placeholder = "Search Pokemon cards...", value 
 
   return (
     <FadeUp>
-      <div className="relative w-full max-w-md mx-auto mb-6">
+      <div className="relative w-full max-w-md mx-auto">
         <div className="relative">
           <input
             type="text"
