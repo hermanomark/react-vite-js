@@ -17,24 +17,38 @@ const Home = () => {
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
-  const [selectedRarities, setSelectedRarities] = useState([]);
-  const [hpRange, setHpRange] = useState([0, 300]);
+  const [selectedRarities, setSelectedRarities] = useState(
+    searchParams.get('rarity') ? searchParams.get('rarity').split('|') : []
+  );
+  const [hpRange, setHpRange] = useState(() => {
+    const hpParam = searchParams.get('hp');
+    if (hpParam) {
+      const [min, max] = hpParam.split('-').map(Number);
+      return [min, max];
+    }
+    return [0, 380];
+  });
+  const [debouncedHpRange, setDebouncedHpRange] = useState(hpRange);
 
   useDebounce(() => {
     setDebouncedSearchTerm(searchTerm);
   }, 720, [searchTerm]);
 
+  useDebounce(() => {
+    setDebouncedHpRange(hpRange);
+  }, 720, [hpRange]);
+
   useEffect(() => {
     const params = new URLSearchParams();
     if (debouncedSearchTerm) params.set('search', debouncedSearchTerm);
     if (selectedCategory) params.set('category', selectedCategory);
-    if (selectedRarities.length > 0) params.set('rarity', selectedRarities.join(','));
-    if (hpRange[0] !== 0 || hpRange[1] !== 300) {
-      params.set('hp', `${hpRange[0]}-${hpRange[1]}`);
+    if (selectedRarities.length > 0) params.set('rarity', selectedRarities.join('|'));
+    if (debouncedHpRange[0] !== 0 || debouncedHpRange[1] !== 380) {
+      params.set('hp', `${debouncedHpRange[0]}-${debouncedHpRange[1]}`);
     }
 
     setSearchParams(params);
-  }, [debouncedSearchTerm, selectedCategory, selectedRarities, hpRange, setSearchParams]);
+  }, [debouncedSearchTerm, selectedCategory, selectedRarities, debouncedHpRange, setSearchParams]);
 
   const {
     data,
@@ -44,8 +58,8 @@ const Home = () => {
     isFetchingNextPage,
     status
   } = useInfiniteQuery({
-    queryKey: ['cards', debouncedSearchTerm, selectedCategory, selectedRarities, hpRange],
-    queryFn: ({ pageParam = 1 }) => getAllCards(pageParam, 10, debouncedSearchTerm, selectedCategory, selectedRarities, hpRange),
+    queryKey: ['cards', debouncedSearchTerm, selectedCategory, selectedRarities, debouncedHpRange],
+    queryFn: ({ pageParam = 1 }) => getAllCards(pageParam, 10, debouncedSearchTerm, selectedCategory, selectedRarities, debouncedHpRange),
     getNextPageParam: (lastPage, allPages) => {
       if (!lastPage || lastPage.length === 0 || lastPage.length < 10) {
         return undefined;
@@ -70,7 +84,6 @@ const Home = () => {
   }
 
   const handleRaritiesChange = (rarities) => {
-    console.log('Rarities changed to:', rarities);
     setSelectedRarities(rarities);
   }
 
@@ -104,7 +117,6 @@ const Home = () => {
       <MainLayout>
         <div className='flex flex-row justify-between sm:flex-row gap-4 mb-6 w-full'>
           <SearchInput onSearch={handleSearch} value={searchTerm} />
-          {/* <CategoryFilter onCategoryChange={handleCategoryChange} selectedCategory={selectedCategory} /> */}
           <Sidebar
             selectedCategory={selectedCategory}
             onCategoryChange={handleCategoryChange}
@@ -113,9 +125,8 @@ const Home = () => {
             hpRange={hpRange}
             onHPChange={handleHPChange}
           />  
-          
         </div>
-        {cards.length === 0 && (debouncedSearchTerm || selectedCategory || selectedRarities.length > 0 || hpRange[0] !== 0 || hpRange[1] !== 300) ? (
+        {cards.length === 0 && (debouncedSearchTerm || selectedCategory || selectedRarities.length > 0 || hpRange[0] !== 0 || hpRange[1] !== 380) ? (
           <div className="text-center py-8">
             <p className="text-gray-500">
               No cards found matching your criteria.

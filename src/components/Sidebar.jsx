@@ -83,7 +83,7 @@ const Sidebar = ({
             <div>
               <HpSlider
                 minHP={0}
-                maxHP={300}
+                maxHP={380}
                 currentRange={hpRange}
                 onHPChange={onHPChange}
               />
@@ -95,6 +95,7 @@ const Sidebar = ({
                 onClick={() => {
                   onCategoryChange('');
                   onRaritiesChange([]);
+                  onHPChange([0, 380]);
                 }}
                 className="cursor-pointer w-full px-4 py-2 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
               >

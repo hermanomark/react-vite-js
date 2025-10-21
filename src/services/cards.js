@@ -1,6 +1,6 @@
 import api from "./client";
 
-export const getAllCards = async (page = 1, itemsPerPage = 10, searchName = '', category = '', rarity = [], hpRange = [0, 300]) => {
+export const getAllCards = async (page = 1, itemsPerPage = 10, searchName = '', category = '', rarity = [], hpRange = [0, 500]) => {
   try {
     let url = `/cards?pagination:page=${page}&pagination:itemsPerPage=${itemsPerPage}`;
 
@@ -19,12 +19,14 @@ export const getAllCards = async (page = 1, itemsPerPage = 10, searchName = '', 
 //     Greater or Equal	gte: hp = gte: 50	Elements with more or equal than the value
 // Lesser or Equal	lte: hp = lte: 50
 
-    if (hpRange && (hpRange[0] !== 0 || hpRange[1] !== 300)) {
+    if (hpRange && (hpRange[0] !== 0 || hpRange[1] !== 500)) {
       url += `&hp=gte:${hpRange[0]}`;
       url += `&hp=lte:${hpRange[1]}`;
     }
 
     url += `&image=notnull:`;
+
+    console.log('Fetching URL:', url);
 
     const response = await api.get(url);
 

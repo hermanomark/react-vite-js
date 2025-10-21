@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 const HpSlider = ({
   onHPChange,
   minHP = 0,
-  maxHP = 300,
-  currentRange = [0, 300]
+  maxHP = 380,
+  currentRange = [0, 380]
 }) => {
   const [hpRange, setHpRange] = useState(currentRange);
 
@@ -62,7 +62,7 @@ const HpSlider = ({
             max={maxHP}
             value={hpRange[0]}
             onChange={handleMinChange}
-            className="absolute top-0 w-full h-2 bg-transparent appearance-none cursor-pointer hp-slider hp-slider-min"
+            className="absolute top-0 left-0 w-full h-2 bg-transparent appearance-none cursor-pointer hp-slider hp-slider-min"
           />
 
           {/* Max slider */}
@@ -72,7 +72,7 @@ const HpSlider = ({
             max={maxHP}
             value={hpRange[1]}
             onChange={handleMaxChange}
-            className="absolute top-0 w-full h-2 bg-transparent appearance-none cursor-pointer hp-slider hp-slider-max"
+            className="absolute top-0 right-0 w-full h-2 bg-transparent appearance-none cursor-pointer hp-slider hp-slider-max"
           />
         </div>
       </div>
