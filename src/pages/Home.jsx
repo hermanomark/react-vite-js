@@ -11,6 +11,7 @@ import LoadMore from '../components/LoadMore';
 import Spinner from '../components/Spinner';
 import Sidebar from '../components/Sidebar';
 import SearchInput from '../components/SearchInput';
+import SortButton from '../components/SortButton';
 
 const Home = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -29,6 +30,7 @@ const Home = () => {
     return [0, 380];
   });
   const [debouncedHpRange, setDebouncedHpRange] = useState(hpRange);
+  const [sortBy, setSortBy] = useState(searchParams.get('sort') || '');
 
   useDebounce(() => {
     setDebouncedSearchTerm(searchTerm);
@@ -46,9 +48,10 @@ const Home = () => {
     if (debouncedHpRange[0] !== 0 || debouncedHpRange[1] !== 380) {
       params.set('hp', `${debouncedHpRange[0]}-${debouncedHpRange[1]}`);
     }
+    if (sortBy) params.set('sort', sortBy);
 
     setSearchParams(params);
-  }, [debouncedSearchTerm, selectedCategory, selectedRarities, debouncedHpRange, setSearchParams]);
+  }, [debouncedSearchTerm, selectedCategory, selectedRarities, debouncedHpRange, sortBy, setSearchParams]);
 
   const {
     data,
@@ -58,15 +61,15 @@ const Home = () => {
     isFetchingNextPage,
     status
   } = useInfiniteQuery({
-    queryKey: ['cards', debouncedSearchTerm, selectedCategory, selectedRarities, debouncedHpRange],
-    queryFn: ({ pageParam = 1 }) => getAllCards(pageParam, 10, debouncedSearchTerm, selectedCategory, selectedRarities, debouncedHpRange),
+    queryKey: ['cards', debouncedSearchTerm, selectedCategory, selectedRarities, debouncedHpRange, sortBy],
+    queryFn: ({ pageParam = 1 }) => getAllCards(pageParam, 10, debouncedSearchTerm, selectedCategory, selectedRarities, debouncedHpRange, sortBy),
     getNextPageParam: (lastPage, allPages) => {
       if (!lastPage || lastPage.length === 0 || lastPage.length < 10) {
         return undefined;
       }
       return allPages.length + 1;
     },
-    staleTime: 5 * 60 * 1000, 
+    staleTime: 5 * 60 * 1000,
   });
 
   const cards = (data?.pages ?? []).flatMap(page =>
@@ -91,6 +94,10 @@ const Home = () => {
     setHpRange(newRange);
   }
 
+  const handleSortChange = (sort) => {
+    setSortBy(sort);
+  }
+
   useEffect(() => {
     if (!loadMoreRef.current || !hasNextPage) return;
 
@@ -113,18 +120,21 @@ const Home = () => {
   return (
     <>
       <Header header="TCG Cards" />
-    
+
       <MainLayout>
         <div className='flex flex-row justify-between sm:flex-row gap-4 mb-6 w-full'>
           <SearchInput onSearch={handleSearch} value={searchTerm} />
-          <Sidebar
-            selectedCategory={selectedCategory}
-            onCategoryChange={handleCategoryChange}
-            selectedRarities={selectedRarities}
-            onRaritiesChange={handleRaritiesChange}
-            hpRange={hpRange}
-            onHPChange={handleHPChange}
-          />  
+          <div className='flex gap-3'>
+            <SortButton onSortChange={handleSortChange} currentSort={sortBy} />
+            <Sidebar
+              selectedCategory={selectedCategory}
+              onCategoryChange={handleCategoryChange}
+              selectedRarities={selectedRarities}
+              onRaritiesChange={handleRaritiesChange}
+              hpRange={hpRange}
+              onHPChange={handleHPChange}
+            />
+          </div>
         </div>
         {cards.length === 0 && (debouncedSearchTerm || selectedCategory || selectedRarities.length > 0 || hpRange[0] !== 0 || hpRange[1] !== 380) ? (
           <div className="text-center py-8">

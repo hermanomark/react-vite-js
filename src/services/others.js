@@ -40,10 +40,6 @@ export const getRarities = async () => {
     try {
         const response = await api.get('/rarities');
 
-      // Add debugging to see what we're getting
-      console.log('Rarities response:', response.data);
-      console.log('Rarities mapped:', response.data.map(r => `"${r}" (length: ${r?.length || 0})`));
-
         return response.data;
     } catch (error) {
         console.log('Error fetching rarities', error);
